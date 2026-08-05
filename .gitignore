@@ -13,6 +13,7 @@
 *.run.xml
 *.pdf
 research-cv/generated/
+__pycache__/
 
 # macOS
 .DS_Store
