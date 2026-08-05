@@ -12,6 +12,7 @@
 *.bcf
 *.run.xml
 *.pdf
+research-cv/generated/
 
 # macOS
 .DS_Store

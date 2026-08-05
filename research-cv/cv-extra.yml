@@ -1,0 +1,19 @@
+cv:
+  position: Postdoctoral Researcher · Wireless Communications · Artificial Intelligence · Robotics
+  address: Seoul, Korea
+  quote: Connected intelligence for reliable mobile robotic systems
+  research_profile: >-
+    I develop communication and machine-intelligence methods for connected mobile robots and next-generation wireless networks, with an emphasis on reliable operation in high-risk and extreme environments.
+  section_order:
+    - research_profile
+    - education
+    - experience
+    - publications
+    - domestic_papers
+    - intellectual_properties
+    - awards
+    - key_projects
+    - academic_services
+    - talks
+    - additional_sections
+  additional_sections: []
