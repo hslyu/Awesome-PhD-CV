@@ -259,17 +259,19 @@ def key_projects_section(portfolio: dict, _: dict, __: list[dict]) -> str:
 
 def academic_services_section(portfolio: dict, _: dict, __: list[dict]) -> str:
     experience = require_mapping(portfolio, "experience", Path("portfolio.yml"))
-    lines = [r"\cvsection{Academic Services}", r"\begin{cvhonors}"]
+    lines = [r"\cvsection{Academic Services}", r"\cvsubsection{Reviewer}", r"\begin{cvhonors}"]
     for venue in experience.get("reviewer", []):
-        lines.append(
-            f"  \\cvhonor{{Reviewer}}{{{latex(venue.get('name'))}}}{{{latex(venue.get('abbr'))}}}{{{latex(venue.get('years'))}}}"
-        )
+        lines.append(f"  \\cvhonorworanking{{{latex(venue.get('name'))}}}{{}}{{{latex(venue.get('years'))}}}")
     lines.append(r"\end{cvhonors}")
     localization = experience.get("other_service", {}).get("localization", [])
     if localization:
-        lines.extend([r"\cvsubsection{Open Source and Localization}", r"\begin{pubSubsectionNum}"])
-        lines.extend(f"  \\item {latex(item)}" for item in localization)
-        lines.append(r"\end{pubSubsectionNum}")
+        lines.extend([r"\cvsubsection{Open Source and Localization}", r"\begin{cvhonors}"])
+        for item in localization:
+            title = item.get("title", "")
+            if item.get("contribution"):
+                title = f"{title}, {item['contribution']}"
+            lines.append(f"  \\cvhonorworanking{{{latex(title)}}}{{}}{{{latex(item.get('years'))}}}")
+        lines.append(r"\end{cvhonors}")
     return "\n".join(lines) + "\n"
 
 
