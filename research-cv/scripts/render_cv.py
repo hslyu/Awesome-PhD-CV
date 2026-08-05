@@ -149,13 +149,14 @@ def research_profile_section(portfolio: dict, cv: dict, _: list[dict]) -> str:
     return f"\\cvsection{{Research Profile}}\n\\begin{{cvparagraph}}\n{latex(cv.get('research_profile', ''))}\n\\end{{cvparagraph}}\n"
 
 
-def education_section(portfolio: dict, _: dict, __: list[dict]) -> str:
+def education_section(portfolio: dict, cv: dict, _: list[dict]) -> str:
     education = require_mapping(portfolio, "experience", Path("portfolio.yml")).get("education", [])
     lines = [r"\cvsection{Education}", r"\begin{cventries}"]
     for item in education:
         degree = f"{item.get('degree', '')} in {item.get('field', '')}".strip()
         adviser = f"Advised by {item['adviser']}." if item.get("adviser") else ""
-        lines.append(cv_entry(degree, item.get("school"), item.get("location"), item.get("period"), adviser))
+        school = cv.get("institution_names", {}).get(item.get("school"), item.get("school"))
+        lines.append(cv_entry(degree, school, item.get("location"), item.get("period"), adviser))
     lines.append(r"\end{cventries}")
     return "\n".join(lines) + "\n"
 
