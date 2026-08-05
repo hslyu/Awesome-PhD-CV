@@ -693,7 +693,7 @@
     \setlength{\extrarowheight}{0pt}
 %    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} C{1.5cm} L{\textwidth - 4.0cm} R{2.5cm}}
     % HT: To set location in a single line
-    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} C{1.5cm} L{\textwidth - 6.0cm} R{4.5cm}}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} C{2.0cm} L{\textwidth - 6.5cm} R{4.5cm}}
 }{%
     \end{tabular*}
   \end{center}
@@ -706,6 +706,10 @@
 
 \newcommand*{\cvhonorworanking}[3]{%
   \honordatestyle{#3} & \honortitlestyle{#1} & \honorlocationstyle{#2} \\
+}
+
+\newcommand*{\cvhonorfull}[3]{%
+  \honordatestyle{#3} & \multicolumn{2}{L{\textwidth - 2.0cm}}{\honorpositionstyle{#1}, \honortitlestyle{#2}} \\
 }
 
 
@@ -912,6 +916,5 @@
 % To simplify Equation (#) to (#)
 \crefname{equation}{}{}
 \Crefname{equation}{}{}
-
 
 

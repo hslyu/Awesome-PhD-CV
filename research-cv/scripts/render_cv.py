@@ -235,7 +235,7 @@ def awards_section(portfolio: dict, _: dict, __: list[dict]) -> str:
     awards = require_mapping(portfolio, "experience", Path("portfolio.yml")).get("awards", [])
     lines = [r"\cvsection{Awards \& Honors}", r"\begin{cvhonors}"]
     for award in awards:
-        lines.append(f"  \\cvhonor{{{latex(award.get('title'))}}}{{{latex(award.get('organization'))}}}{{}}{{{latex(award.get('year'))}}}")
+        lines.append(f"  \\cvhonorfull{{{latex(award.get('title'))}}}{{{latex(award.get('organization'))}}}{{{latex(award.get('year'))}}}")
     lines.append(r"\end{cvhonors}")
     return "\n".join(lines) + "\n"
 
@@ -259,7 +259,7 @@ def key_projects_section(portfolio: dict, _: dict, __: list[dict]) -> str:
 
 def academic_services_section(portfolio: dict, _: dict, __: list[dict]) -> str:
     experience = require_mapping(portfolio, "experience", Path("portfolio.yml"))
-    lines = [r"\cvsection{Academic Services}", r"\cvsubsection{Reviewer}", r"\begin{cvhonors}"]
+    lines = [r"\cvsection{Academic Services}", r"\par", r"\cvsubsection{Reviewer}", r"\begin{cvhonors}"]
     for venue in experience.get("reviewer", []):
         lines.append(f"  \\cvhonorworanking{{{latex(venue.get('name'))}}}{{}}{{{latex(venue.get('years'))}}}")
     lines.append(r"\end{cvhonors}")

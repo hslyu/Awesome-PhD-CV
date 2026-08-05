@@ -8,14 +8,13 @@ cv:
   research_profile: >-
     I develop communication and machine-intelligence methods for connected mobile robots and next-generation wireless networks, with an emphasis on reliable operation in high-risk and extreme environments.
   section_order:
-    - research_profile
     - education
     - experience
     - publications
     - domestic_papers
     - intellectual_properties
-    - awards
     - key_projects
+    - awards
     - academic_services
     - talks
     - additional_sections
