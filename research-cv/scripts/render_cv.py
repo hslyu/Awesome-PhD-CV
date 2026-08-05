@@ -227,12 +227,6 @@ def intellectual_properties_section(portfolio: dict, _: dict, __: list[dict]) ->
                 f"  \\item {author_list(patent.get('inventors'), separator=';')}, ``{latex(patent.get('title'))},'' {latex('; '.join(identifiers))}. {latex(patent.get('status'))}."
             )
         lines.append(r"\end{pubSubsectionNum}")
-    software = miscellaneous.get("software", [])
-    if software:
-        lines.extend([r"\cvsubsection{Software Registrations}", r"\begin{pubSubsectionNum}"])
-        for item in software:
-            lines.append(f"  \\item {latex(item.get('author'))}, ``{latex(item.get('title'))},'' {latex(item.get('registration'))}.")
-        lines.append(r"\end{pubSubsectionNum}")
     return "\n".join(lines) + "\n"
 
 
