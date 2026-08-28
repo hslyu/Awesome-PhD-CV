@@ -114,13 +114,19 @@ def profile_fragment(portfolio: dict, cv: dict) -> str:
     linkedin = urlparse(str(links.get("linkedin", ""))).path.strip("/").removeprefix("in/")
     scholar_query = parse_qs(urlparse(str(links.get("scholar", ""))).query)
     scholar_id = scholar_query.get("user", [""])[0]
+    email_display = str(cv.get("email_display") or profile.get("email", ""))
+    email_display_tex = "".join(
+        f"\\textcolor{{awesome}}{{{latex(part)}}}" if part == "dot" else latex(part)
+        for part in re.split(r"(\bdot\b)", email_display)
+    )
 
     lines = [
         f"\\name{{{latex(' '.join(name_parts[:-1]))}}}{{{latex(name_parts[-1])}}}",
         f"\\newcommand{{\\generatedcvname}}{{{latex(site['name'])}}}",
         f"\\position{{{latex(cv.get('position', ''))}}}",
         f"\\address{{{latex(cv.get('address', ''))}}}",
-        f"\\email{{{latex(cv.get('email_display') or profile.get('email', ''))}}}",
+        f"\\email{{{email_display_tex}}}",
+        f"\\emailtarget{{{latex(profile.get('email', ''))}}}",
         f"\\homepage{{{latex(homepage)}}}",
     ]
     if github:
@@ -299,10 +305,13 @@ def intellectual_properties_section(portfolio: dict, _: dict, __: list[dict]) ->
     return "\n".join(lines) + "\n"
 
 
-def awards_section(portfolio: dict, _: dict, __: list[dict]) -> str:
+def awards_section(portfolio: dict, cv: dict, __: list[dict]) -> str:
     awards = require_mapping(portfolio, "experience", Path("portfolio.yml")).get("awards", [])
+    excluded_awards = set(cv.get("excluded_awards", []))
     lines = [r"\cvsection{Awards \& Honors}", r"\begin{cvhonors}"]
     for award in awards:
+        if award.get("title") in excluded_awards:
+            continue
         lines.append(f"  \\cvhonorfull{{{latex(award.get('title'))}}}{{{latex(award.get('organization'))}}}{{{latex(award.get('year'))}}}")
     lines.append(r"\end{cvhonors}")
     return "\n".join(lines) + "\n"

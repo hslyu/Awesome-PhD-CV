@@ -272,6 +272,10 @@
 % Usage: \email{<email address>}
 \newcommand*{\email}[1]{\def\@email{#1}}
 
+% Defines the actual email target when the displayed address is obfuscated.
+% Usage: \emailtarget{<email address>}
+\newcommand*{\emailtarget}[1]{\def\@emailtarget{#1}}
+
 % Defines writer's date of birth (optional)
 % Usage: \dateofbirth{<date>}
 \newcommand*{\dateofbirth}[1]{\def\@dateofbirth{#1}}
@@ -480,7 +484,9 @@
         {}%
         {%
           \ifbool{isstart}{\setbool{isstart}{false}}{\acvHeaderSocialSep}%
-          \href{mailto:\@email}{\faEnvelope\acvHeaderIconSep\@email}%
+          \ifthenelse{\isundefined{\@emailtarget}}%
+            {\href{mailto:\@email}{\faEnvelope\acvHeaderIconSep\@email}}%
+            {\href{mailto:\@emailtarget}{\faEnvelope\acvHeaderIconSep\@email}}%
         }%
       \ifthenelse{\isundefined{\@dateofbirth}}%
         {}%
@@ -916,5 +922,4 @@
 % To simplify Equation (#) to (#)
 \crefname{equation}{}{}
 \Crefname{equation}{}{}
-
 
