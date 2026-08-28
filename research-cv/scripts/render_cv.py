@@ -186,7 +186,7 @@ def research_profile_section(portfolio: dict, cv: dict, _: list[dict]) -> str:
                 rendered_detail = latex(detail.get("text", ""))
                 if detail.get("url"):
                     link_text = detail.get("link_text") or detail["url"]
-                    rendered_detail += f" \\href{{{url_argument(detail['url'])}}}{{{latex(link_text)}}}"
+                    rendered_detail += f" \\href{{{url_argument(detail['url'])}}}{{\\textcolor{{awesome}}{{{latex(link_text)}}}}}"
             else:
                 rendered_detail = latex(detail)
             lines.append(f"          \\item {rendered_detail}")
