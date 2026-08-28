@@ -181,7 +181,15 @@ def research_profile_section(portfolio: dict, cv: dict, _: list[dict]) -> str:
     for item in highlights:
         details = item.get("items") or [item.get("text", "")]
         lines.extend([f"      \\item {latex(item.get('label', ''))}:", r"        \begin{itemize}"])
-        lines.extend(f"          \\item {latex(detail)}" for detail in details)
+        for detail in details:
+            if isinstance(detail, dict):
+                rendered_detail = latex(detail.get("text", ""))
+                if detail.get("url"):
+                    link_text = detail.get("link_text") or detail["url"]
+                    rendered_detail += f" \\href{{{url_argument(detail['url'])}}}{{{latex(link_text)}}}"
+            else:
+                rendered_detail = latex(detail)
+            lines.append(f"          \\item {rendered_detail}")
         lines.append(r"        \end{itemize}")
     lines.extend([
         r"    \end{cvitems}",
@@ -196,7 +204,7 @@ def research_profile_section(portfolio: dict, cv: dict, _: list[dict]) -> str:
         r"    \begin{cvitems}",
     ])
     lines.extend(f"      \\item {latex(interest)}" for interest in interests)
-    lines.extend([r"    \end{cvitems}", r"  }", r"\par\vspace{4mm}", ""])
+    lines.extend([r"    \end{cvitems}", r"  }", r"\par", ""])
     return "\n".join(lines)
 
 

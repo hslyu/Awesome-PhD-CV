@@ -11,6 +11,11 @@ cv:
   publications_summary: >-
     Authored/co-authored 12 peer-reviewed papers spanning AI and AI-enabled wireless systems (IEEE TNNLS, IEEE TWC, IEEE IoTJ; IEEE JSAC and NeurIPS under review), communication-aware motion planning and networking (IEEE TWC; IEEE TCOM and IEEE INFOCOM under review), and networked robotic systems (IEEE/RSJ IROS). Current research extends these directions toward wireless digital twins and networked Physical AI.
   summary_highlights:
+    - label: Research systems & demos
+      items:
+        - text: Wireless digital-twin, networked SDR, drone, and robotics demos are available at
+          link_text: hslyu.github.io/demos/
+          url: https://hslyu.github.io/demos/
     - label: Academic honors & awards
       items:
         - The 32nd Samsung HumanTech Paper Award (2026) — 120 awardees among 3,172 submissions (top 3.8%).
