@@ -120,7 +120,7 @@ def profile_fragment(portfolio: dict, cv: dict) -> str:
         f"\\newcommand{{\\generatedcvname}}{{{latex(site['name'])}}}",
         f"\\position{{{latex(cv.get('position', ''))}}}",
         f"\\address{{{latex(cv.get('address', ''))}}}",
-        f"\\email{{{latex(profile.get('email', ''))}}}",
+        f"\\email{{{latex(cv.get('email_display') or profile.get('email', ''))}}}",
         f"\\homepage{{{latex(homepage)}}}",
     ]
     if github:
@@ -134,19 +134,64 @@ def profile_fragment(portfolio: dict, cv: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
-def cv_entry(position: object, title: object, location: object, period: object, description: object = "") -> str:
+def cv_entry(
+    position: object,
+    title: object,
+    location: object,
+    period: object,
+    description: object = "",
+    description_is_tex: bool = False,
+) -> str:
+    rendered_description = description if description_is_tex else latex(description)
     return (
         f"  \\cventry\n"
         f"    {{{latex(position)}}}\n"
         f"    {{{latex(title)}}}\n"
         f"    {{{latex(location)}}}\n"
         f"    {{{latex(period)}}}\n"
-        f"    {{{latex(description)}}}\n"
+        f"    {{{rendered_description}}}\n"
     )
 
 
 def research_profile_section(portfolio: dict, cv: dict, _: list[dict]) -> str:
-    return f"\\cvsection{{Summary}}\n\\begin{{cvparagraph}}\n{latex(cv.get('research_profile', ''))}\n\\end{{cvparagraph}}\n"
+    interests = cv.get("field_of_interest", [])
+    highlights = [
+        {"label": "Publications", "text": cv.get("publications_summary", "")},
+        *cv.get("summary_highlights", []),
+    ]
+    lines = [
+        r"\cvsection{Summary}\par",
+        r"\begin{cvparagraph}",
+        latex(cv.get("research_profile", "")),
+        r"\end{cvparagraph}",
+        r"\cventry",
+        r"  {}",
+        r"  {Highlights\vspace{-0.3cm}}",
+        r"  {}",
+        r"  {}",
+        r"  {",
+        r"    \begin{cvitems}",
+    ]
+    for item in highlights:
+        details = item.get("items") or [item.get("text", "")]
+        lines.extend([f"      \\item {latex(item.get('label', ''))}:", r"        \begin{itemize}"])
+        lines.extend(f"          \\item {latex(detail)}" for detail in details)
+        lines.append(r"        \end{itemize}")
+    lines.extend([
+        r"    \end{cvitems}",
+        r"  }",
+        r"\par\vspace{4mm}",
+        r"\cventry",
+        r"  {My research interests include, but are not confined to:}",
+        r"  {Field of Interest}",
+        r"  {}",
+        r"  {}",
+        r"  {",
+        r"    \begin{cvitems}",
+    ])
+    lines.extend(f"      \\item {latex(interest)}" for interest in interests)
+    lines.extend([r"    \end{cvitems}", r"  }", r"\par\vspace{4mm}", ""])
+    return "\n".join(lines)
 
 
 def education_section(portfolio: dict, cv: dict, _: list[dict]) -> str:
@@ -155,15 +200,17 @@ def education_section(portfolio: dict, cv: dict, _: list[dict]) -> str:
     for item in education:
         degree = f"{item.get('degree', '')} in {item.get('field', '')}".strip()
         description_parts = []
-        if item.get("adviser"):
-            description_parts.append(f"Advised by {item['adviser']}.")
         thesis = item.get("dissertation") or item.get("thesis")
         if thesis:
             label = "Dissertation" if item.get("dissertation") else "Thesis"
-            description_parts.append(f"{label}: ``{thesis}''.")
-        adviser = " ".join(description_parts)
+            description_parts.append(f"\\item {label}: ``{latex(thesis)}''.")
+        if item.get("adviser"):
+            description_parts.append(f"\\item Advised by {latex(item['adviser'])}.")
+        description = ""
+        if description_parts:
+            description = "\\vspace{-5mm}\\begin{itemize}[leftmargin=*,nosep,topsep=0pt,partopsep=0pt]" + "".join(description_parts) + "\\end{itemize}"
         school = cv.get("institution_names", {}).get(item.get("school"), item.get("school"))
-        lines.append(cv_entry(degree, school, item.get("location"), item.get("period"), adviser))
+        lines.append(cv_entry(degree, school, item.get("location"), item.get("period"), description, description_is_tex=True))
     lines.append(r"\end{cventries}")
     return "\n".join(lines) + "\n"
 
@@ -175,7 +222,21 @@ def experience_section(portfolio: dict, _: dict, __: list[dict]) -> str:
         organization = job.get("organization", "")
         if job.get("unit"):
             organization = f"{organization}, {job['unit']}"
-        lines.append(cv_entry(job.get("title"), organization, job.get("location"), job.get("period")))
+        contributions = job.get("contributions", [])
+        description = ""
+        if contributions:
+            items = "".join(f"\\item {latex(item)}" for item in contributions)
+            description = f"\\vspace{{-5mm}}\\begin{{itemize}}[leftmargin=*,nosep,topsep=0pt,partopsep=0pt]{items}\\end{{itemize}}"
+        lines.append(
+            cv_entry(
+                organization,
+                job.get("title"),
+                job.get("location"),
+                job.get("period"),
+                description,
+                description_is_tex=True,
+            )
+        )
     lines.append(r"\end{cventries}")
     return "\n".join(lines) + "\n"
 
@@ -255,11 +316,18 @@ def abbreviation(value: object) -> str:
 
 def key_projects_section(portfolio: dict, _: dict, __: list[dict]) -> str:
     projects = require_mapping(portfolio, "miscellaneous", Path("portfolio.yml")).get("projects", [])
-    lines = [r"\cvsection{Key Research Projects}", r"\begin{cventries}"]
+    lines = [r"\cvsection{Key Research Projects Experience}", r"\begin{cventries}"]
     for project in projects:
         sponsors = [abbreviation(project.get("ministry")), abbreviation(project.get("agency")), str(project.get("acknowledge", ""))]
         support = ", ".join(part for part in sponsors if part and part != "N/A")
-        lines.append(cv_entry(support, project.get("title"), "", project.get("period")))
+        description_parts = [f"\\item {latex(item)}" for item in project.get("contributions", [])]
+        keywords = project.get("keywords")
+        if keywords:
+            description_parts.append(f"\\item \\textit{{Keywords:}} {latex(keywords)}")
+        description = ""
+        if description_parts:
+            description = "\\vspace{-5mm}\\begin{itemize}[leftmargin=*,nosep,topsep=0pt,partopsep=0pt]" + "".join(description_parts) + "\\end{itemize}"
+        lines.append(cv_entry(support, project.get("title"), "", project.get("period"), description, description_is_tex=True))
     lines.append(r"\end{cventries}")
     return "\n".join(lines) + "\n"
 
