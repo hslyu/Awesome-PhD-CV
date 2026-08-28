@@ -1,13 +1,14 @@
 cv:
-  position: Postdoctoral Researcher · Wireless Communications · Artificial Intelligence · Robotics
+  position: Integrated Systems Engineer across Wireless, AI, and Robotics
   address: Seoul, Korea
   institution_names:
     POSTECH: Pohang University of Science and Technology (POSTECH)
-    UNIST: Ulsan National Institute of Science & Technology (UNIST)
-  quote: Connected intelligence for reliable mobile robotic systems
+    UNIST: Ulsan National Institute of Science and Technology (UNIST)
+  quote: Bridging wireless, AI, and robotics for the future
   research_profile: >-
     I develop communication and machine-intelligence methods for connected mobile robots and next-generation wireless networks, with an emphasis on reliable operation in high-risk and extreme environments.
   section_order:
+    - research_profile
     - education
     - experience
     - publications

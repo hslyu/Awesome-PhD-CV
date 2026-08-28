@@ -146,7 +146,7 @@ def cv_entry(position: object, title: object, location: object, period: object, 
 
 
 def research_profile_section(portfolio: dict, cv: dict, _: list[dict]) -> str:
-    return f"\\cvsection{{Research Profile}}\n\\begin{{cvparagraph}}\n{latex(cv.get('research_profile', ''))}\n\\end{{cvparagraph}}\n"
+    return f"\\cvsection{{Summary}}\n\\begin{{cvparagraph}}\n{latex(cv.get('research_profile', ''))}\n\\end{{cvparagraph}}\n"
 
 
 def education_section(portfolio: dict, cv: dict, _: list[dict]) -> str:
@@ -154,7 +154,14 @@ def education_section(portfolio: dict, cv: dict, _: list[dict]) -> str:
     lines = [r"\cvsection{Education}", r"\begin{cventries}"]
     for item in education:
         degree = f"{item.get('degree', '')} in {item.get('field', '')}".strip()
-        adviser = f"Advised by {item['adviser']}." if item.get("adviser") else ""
+        description_parts = []
+        if item.get("adviser"):
+            description_parts.append(f"Advised by {item['adviser']}.")
+        thesis = item.get("dissertation") or item.get("thesis")
+        if thesis:
+            label = "Dissertation" if item.get("dissertation") else "Thesis"
+            description_parts.append(f"{label}: ``{thesis}''.")
+        adviser = " ".join(description_parts)
         school = cv.get("institution_names", {}).get(item.get("school"), item.get("school"))
         lines.append(cv_entry(degree, school, item.get("location"), item.get("period"), adviser))
     lines.append(r"\end{cventries}")
@@ -163,7 +170,7 @@ def education_section(portfolio: dict, cv: dict, _: list[dict]) -> str:
 
 def experience_section(portfolio: dict, _: dict, __: list[dict]) -> str:
     jobs = require_mapping(portfolio, "experience", Path("portfolio.yml")).get("professional", [])
-    lines = [r"\cvsection{Experience}", r"\begin{cventries}"]
+    lines = [r"\cvsection{Working Experience}", r"\begin{cventries}"]
     for job in jobs:
         organization = job.get("organization", "")
         if job.get("unit"):
@@ -191,7 +198,7 @@ def publications_section(_: dict, __: dict, bibliography: list[dict]) -> str:
         ("International Conferences and Workshops", [entry for entry in bibliography if entry.get("ENTRYTYPE") == "inproceedings"]),
         ("Preprints", [entry for entry in bibliography if entry.get("abbr") == "arXiv"]),
     ]
-    lines = [r"\cvsection{Publications}"]
+    lines = [r"\cvsection{Publications}", r"\par"]
     for heading, entries in groups:
         if not entries:
             continue
