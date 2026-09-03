@@ -320,7 +320,9 @@ def awards_section(portfolio: dict, cv: dict, __: list[dict]) -> str:
     for award in awards:
         if award.get("title") in excluded_awards:
             continue
-        lines.append(f"  \\cvhonorfull{{{latex(award.get('title'))}}}{{{latex(award.get('organization'))}}}{{{latex(award.get('year'))}}}")
+        date = award.get("date", award.get("year"))
+        organization_and_date = f"{award.get('organization')}, {date}"
+        lines.append(f"  \\cvhonorfull{{{latex(award.get('title'))}}}{{{latex(organization_and_date)}}}{{}}")
     lines.append(r"\end{cvhonors}")
     return "\n".join(lines) + "\n"
 
