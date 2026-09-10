@@ -8,6 +8,8 @@
 
 Do not copy portfolio records into this repository. Add website-visible structured content to the parent repository, add publications to its BibTeX file, and reserve `cv-extra.yml` for information that belongs only in the CV.
 
+Do not reintroduce manually maintained `cv/` section files, a local bibliography, or profile-specific research assets. The renderer and the three data sources above are the complete content pipeline.
+
 From the parent repository, generate the TeX fragments with:
 
 ```bash

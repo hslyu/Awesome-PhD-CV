@@ -91,9 +91,17 @@ def human_name(raw_name: str) -> str:
     return f"{given} {family}".strip()
 
 
-def author_list(raw_authors: object, separator: str = " and ") -> str:
+def author_list(raw_authors: object, separator: str = " and ", equal_contributors: object = "") -> str:
     names = [human_name(name.strip()) for name in str(raw_authors or "").split(separator) if name.strip()]
-    rendered = [r"\textbf{Hyeonsu Lyu}" if name == "Hyeonsu Lyu" else latex(name) for name in names]
+    equal_names = {
+        human_name(name.strip()) for name in str(equal_contributors or "").split(" and ") if name.strip()
+    }
+    rendered = []
+    for name in names:
+        rendered_name = r"\authorhighlight{Hyeonsu Lyu}" if name == "Hyeonsu Lyu" else latex(name)
+        if name in equal_names:
+            rendered_name += r"\equalcontributionmark"
+        rendered.append(rendered_name)
     if len(rendered) < 2:
         return "".join(rendered)
     if len(rendered) == 2:
@@ -180,7 +188,7 @@ def research_profile_section(portfolio: dict, cv: dict, _: list[dict]) -> str:
     ]
     for item in highlights:
         details = item.get("items") or [item.get("text", "")]
-        lines.extend([f"      \\item {latex(item.get('label', ''))}:", r"        \begin{itemize}"])
+        lines.extend([f"      \\item {{\\sourcesansmedium {latex(item.get('label', ''))}}}:", r"        \begin{itemize}"])
         for detail in details:
             if isinstance(detail, dict):
                 rendered_detail = latex(detail.get("text", ""))
@@ -256,52 +264,64 @@ def experience_section(portfolio: dict, _: dict, __: list[dict]) -> str:
 
 
 def publication_line(entry: dict) -> str:
-    authors = author_list(entry.get("author"))
+    authors = author_list(entry.get("author"), equal_contributors=entry.get("equal_contribution"))
     title = bib_text(entry.get("title"))
     url = entry.get("url") or (f"https://doi.org/{entry['doi']}" if entry.get("doi") else "")
     linked_title = f"\\href{{{url_argument(url)}}}{{{title}}}" if url else title
-    venue = bib_text(entry.get("abbr") or entry.get("journal") or entry.get("booktitle"))
+    venue = bib_text(entry.get("venue_short") or entry.get("abbr") or entry.get("journal") or entry.get("booktitle"))
+    venue_match = re.fullmatch(r"(.+) \(([^()]+)\)", venue)
+    if venue_match:
+        venue = f"\\textit{{{venue_match.group(1)}}} \\textup{{(\\venueinitials{{{venue_match.group(2)}}})}}"
+    else:
+        venue = f"\\textit{{{venue}}}"
     year = bib_text(entry.get("year"))
     note = bib_text(entry.get("note"))
+    note = re.sub(
+        r"(IEEE [^()]+?) \(([A-Za-z][A-Za-z0-9]+)\)",
+        lambda match: f"\\textit{{{match.group(1)}}} \\textup{{(\\venueinitials{{{match.group(2)}}})}}",
+        note,
+    )
+    note = note.replace("Best Paper Award", r"\awardhighlight{Best Paper Award}")
     ending = f" {note}." if note else ""
-    return f"  \\item {authors}, ``{linked_title},'' \\textit{{{venue}}}, {year}.{ending}"
+    return f"  \\item {authors}, ``{linked_title},'' {venue}, {year}.{ending}"
 
 
 def publications_section(_: dict, __: dict, bibliography: list[dict]) -> str:
+    preprint_abbreviations = {"arXiv", "Preprint"}
     groups = [
-        ("International Journals", [entry for entry in bibliography if entry.get("ENTRYTYPE") == "article" and entry.get("abbr") != "arXiv"]),
+        ("Preprints", [entry for entry in bibliography if entry.get("abbr") in preprint_abbreviations]),
+        ("International Journals", [entry for entry in bibliography if entry.get("ENTRYTYPE") == "article" and entry.get("abbr") not in preprint_abbreviations]),
         ("International Conferences and Workshops", [entry for entry in bibliography if entry.get("ENTRYTYPE") == "inproceedings"]),
-        ("Preprints", [entry for entry in bibliography if entry.get("abbr") == "arXiv"]),
     ]
     lines = [r"\cvsection{Publications}", r"\par"]
     for heading, entries in groups:
         if not entries:
             continue
-        lines.extend([f"\\cvsubsection{{{heading}}}", r"\begin{pubSubsectionNum}"])
+        lines.extend([f"\\cvsubsection{{{heading}}}", r"\begin{cvNumberedList}"])
         lines.extend(publication_line(entry) for entry in entries)
-        lines.append(r"\end{pubSubsectionNum}")
+        lines.append(r"\end{cvNumberedList}")
     return "\n".join(lines) + "\n"
 
 
 def domestic_papers_section(portfolio: dict, _: dict, __: list[dict]) -> str:
     papers = require_mapping(portfolio, "miscellaneous", Path("portfolio.yml")).get("domestic_papers", [])
-    lines = [r"\cvsection{Domestic Papers}", r"\begin{pubSubsectionNum}"]
+    lines = [r"\cvsection{Domestic Papers}", r"\begin{cvNumberedList}"]
     for paper in papers:
         authors = author_list(paper.get("authors"), separator=";")
         note = f" {latex(paper['note'])}." if paper.get("note") else ""
         lines.append(
             f"  \\item {authors}, ``{latex(paper.get('title'))},'' \\textit{{{latex(paper.get('venue'))}}}, {latex(paper.get('date'))}.{note}"
         )
-    lines.append(r"\end{pubSubsectionNum}")
+    lines.append(r"\end{cvNumberedList}")
     return "\n".join(lines) + "\n"
 
 
 def intellectual_properties_section(portfolio: dict, _: dict, __: list[dict]) -> str:
     miscellaneous = require_mapping(portfolio, "miscellaneous", Path("portfolio.yml"))
-    lines = [r"\cvsection{Intellectual Properties}"]
+    lines = [r"\cvsection{Intellectual Properties}", r"\par"]
     patents = miscellaneous.get("patents", [])
     if patents:
-        lines.extend([r"\cvsubsection{Patents}", r"\begin{pubSubsectionNum}"])
+        lines.extend([r"\cvsubsection{Patents}", r"\begin{cvNumberedList}"])
         for patent in patents:
             identifiers = [f"{patent.get('jurisdiction', '')} {patent.get('application', '')}".strip()]
             if patent.get("registration"):
@@ -309,7 +329,7 @@ def intellectual_properties_section(portfolio: dict, _: dict, __: list[dict]) ->
             lines.append(
                 f"  \\item {author_list(patent.get('inventors'), separator=';')}, ``{latex(patent.get('title'))},'' {latex('; '.join(identifiers))}. {latex(patent.get('status'))}."
             )
-        lines.append(r"\end{pubSubsectionNum}")
+        lines.append(r"\end{cvNumberedList}")
     return "\n".join(lines) + "\n"
 
 
@@ -320,9 +340,14 @@ def awards_section(portfolio: dict, cv: dict, __: list[dict]) -> str:
     for award in awards:
         if award.get("title") in excluded_awards:
             continue
-        date = award.get("date", award.get("year"))
-        organization_and_date = f"{award.get('organization')}, {date}"
-        lines.append(f"  \\cvhonorfull{{{latex(award.get('title'))}}}{{{latex(organization_and_date)}}}{{}}")
+        year = award.get("year", "")
+        date = award.get("date")
+        organization_and_date = str(award.get("organization", ""))
+        if date:
+            organization_and_date += f", {date}"
+        lines.append(
+            f"  \\cvhonorfull{{{latex(award.get('title'))}}}{{{latex(organization_and_date)}}}{{{latex(year)}}}"
+        )
     lines.append(r"\end{cvhonors}")
     return "\n".join(lines) + "\n"
 
@@ -346,7 +371,15 @@ def key_projects_section(portfolio: dict, _: dict, __: list[dict]) -> str:
         description = ""
         if description_parts:
             description = "\\vspace{-5mm}\\begin{itemize}[leftmargin=*,nosep,topsep=0pt,partopsep=0pt]" + "".join(description_parts) + "\\end{itemize}"
-        lines.append(cv_entry(support, project.get("title"), "", project.get("period"), description, description_is_tex=True))
+        lines.extend(
+            [
+                r"  \cvprojectentry",
+                f"    {{{latex(support)}}}",
+                f"    {{{latex(project.get('title'))}}}",
+                f"    {{{latex(project.get('period'))}}}",
+                f"    {{{description}}}",
+            ]
+        )
     lines.append(r"\end{cventries}")
     return "\n".join(lines) + "\n"
 
@@ -371,18 +404,18 @@ def academic_services_section(portfolio: dict, _: dict, __: list[dict]) -> str:
 
 def talks_section(portfolio: dict, _: dict, __: list[dict]) -> str:
     talks = require_mapping(portfolio, "experience", Path("portfolio.yml")).get("other_service", {}).get("talks", [])
-    lines = [r"\cvsection{Talks}", r"\begin{pubSubsectionNum}"]
+    lines = [r"\cvsection{Talks}", r"\begin{cvNumberedList}"]
     lines.extend(f"  \\item {latex(talk)}" for talk in talks)
-    lines.append(r"\end{pubSubsectionNum}")
+    lines.append(r"\end{cvNumberedList}")
     return "\n".join(lines) + "\n"
 
 
 def additional_sections(_: dict, cv: dict, __: list[dict]) -> str:
     lines = []
     for section in cv.get("additional_sections", []):
-        lines.extend([f"\\cvsection{{{latex(section.get('title'))}}}", r"\begin{pubSubsectionNum}"])
+        lines.extend([f"\\cvsection{{{latex(section.get('title'))}}}", r"\begin{cvNumberedList}"])
         lines.extend(f"  \\item {latex(item)}" for item in section.get("items", []))
-        lines.append(r"\end{pubSubsectionNum}")
+        lines.append(r"\end{cvNumberedList}")
     return "\n".join(lines) + ("\n" if lines else "")
 
 

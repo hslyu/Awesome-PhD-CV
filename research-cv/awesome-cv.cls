@@ -70,14 +70,12 @@
 \RequirePackage[quiet]{fontspec}
 % To support LaTeX quoting style
 \defaultfontfeatures{Ligatures=TeX}
-% Needed to manage math fonts
+% Keep Unicode math support for stable symbol shaping and PDF text extraction.
 \RequirePackage{unicode-math}
 % Needed to use icons from font-awesome
 \RequirePackage{fontawesome5}
 \RequirePackage{roboto}
-\RequirePackage[default,opentype]{sourcesanspro}
-% Needed for the photo ID
-\RequirePackage[skins]{tcolorbox}
+\RequirePackage[default,opentype]{sourcesans}
 % Needed to deal a paragraphs
 \RequirePackage{parskip}
 % Needed to deal hyperlink
@@ -170,9 +168,14 @@
 %-------------------------------------------------------------------------------
 \newcommand*{\headerfont}{\roboto}
 \newcommand*{\headerfontlight}{\robotolight}
-\newcommand*{\footerfont}{\sourcesanspro}
-\newcommand*{\bodyfont}{\sourcesanspro}
-\newcommand*{\bodyfontlight}{\sourcesansprolight}
+\newcommand*{\footerfont}{\sourcesans}
+\newcommand*{\bodyfont}{\sourcesans}
+\newcommand*{\bodyfontlight}{\sourcesanslight}
+\newcommand*{\semiboldhighlight}[1]{\textcolor{awesome}{{\sourcesanslight\bfseries #1}}}
+\newcommand*{\authorhighlight}[1]{\semiboldhighlight{#1}}
+\newcommand*{\venueinitials}[1]{\textup{\semiboldhighlight{#1}}}
+\newcommand*{\awardhighlight}[1]{\semiboldhighlight{#1}}
+\newcommand*{\equalcontributionmark}{\textsuperscript{{\sourcesanslight\bfseries =}}}
 
 %-------------------------------------------------------------------------------
 %                Configuration for styles
@@ -231,6 +234,8 @@
 % Define photo ID
 % Usage: \photo[circle|rectangle,edge|noedge,left|right]{<path-to-image>}
 \newcommand{\photo}[2][circle,edge,left]{%
+  % TikZ/tcolorbox is only needed when a photo is explicitly configured.
+  \RequirePackage[skins]{tcolorbox}%
   \def\@photo{#2}
   \@for\tmp:=#1\do{%
     \ifthenelse{\equal{\tmp}{circle} \or \equal{\tmp}{rectangle}}%
@@ -653,17 +658,27 @@
 }
 % Define an entry of cv information
 % Usage: \cventry{<position>}{<title>}{<location>}{<date>}{<description>}
+\newlength{\cventrydatewidth}
+\setlength{\cventrydatewidth}{4.5cm}
 \newcommand*{\cventry}[5]{%
   \vspace{-2.0mm}
   \setlength\tabcolsep{0pt}
   \setlength{\extrarowheight}{0pt}
-  \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} L{\textwidth - 4.5cm} R{4.5cm}}
+  \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} L{\textwidth - \cventrydatewidth} R{\cventrydatewidth}}
     \ifempty{#2#3}
       {\entrypositionstyle{#1} & \entrydatestyle{#4} \\}
       {\entrytitlestyle{#2} & \entrylocationstyle{#3} \\
       \entrypositionstyle{#1} & \entrydatestyle{#4} \\}
     \multicolumn{2}{L{\textwidth}}{\descriptionstyle{#5}}
   \end{tabular*}%
+}
+
+% Project entries have no location, so reserve only the width needed by their dates.
+\newcommand*{\cvprojectentry}[4]{%
+  \begingroup%
+  \setlength{\cventrydatewidth}{2.5cm}%
+  \cventry{#1}{#2}{}{#3}{#4}%
+  \par\endgroup%
 }
 
 % Define an environment for cvsubentry
@@ -743,7 +758,7 @@
   \begin{justify}
   \begin{itemize}[leftmargin=2ex, nosep, noitemsep]
     \setlength{\parskip}{0pt}
-    \renewcommand{\labelitemi}{\bullet}
+    \renewcommand{\labelitemi}{\textbullet}
 }{%
   \end{itemize}
   \end{justify}
@@ -857,69 +872,13 @@
     }
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%               Modified by Hyungtae
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newenvironment{pubSubsectionNum}{
+% Portfolio-specific numbered list shared by publication-style sections.
+\newenvironment{cvNumberedList}{
   \smallskip
-  \begin{enumerate}
-   \itemsep -0.3em % Compress items in list together for aesthetics
+  \fontsize{10pt}{12pt}\selectfont
+  \setlength{\emergencystretch}{1em}
+  \begin{enumerate}[label={[\arabic*]}, leftmargin=*, itemsep=-0.3em]
   }{
   \end{enumerate}
-  \vspace{0.5em} % Some space after the list of bullet points
+  \vspace{0.5em}
 }
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcounter{journalSubsectionNumCounter}
-\newcounter{confSubsectionNumCounter}
-
-\newenvironment{journalSubsectionNum}{%
-  \setcounter{journalSubsectionNumCounter}{0}%
-  \begin{enumerate}[label={[j\thejournalSubsectionNumCounter]}, itemsep=-0.3em]%
-  }{%
-  \end{enumerate}%
-  \vspace{0.5em}%
-}
-
-\newcommand{\journalSubsectionNumReverse}{%
-  \begin{itemize}[label={[j\thejournalSubsectionNumCounter]}, itemsep=-0.3em, resume]%
-}
-
-\newcommand{\subsectionNumEnd}{%
-\end{itemize}%
-\stepcounter{journalSubsectionNumCounter}%
-}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\newcommand{\hyungtaelim}{\textbf{Hyungtae Lim}}
-\newcommand{\underreview}{Under review.}
-\newcommand{\accepted}{Accepted. To appear.}
-\newcommand{\submitted}{Submitted.}
-
-\definecolor{justblue}{HTML}{0000F1}
-% Not to use xcolor, define colors manually using RGB values
-\definecolor{Violet}{rgb}{0.56, 0.0, 0.85}        
-\definecolor{BurntOrange}{rgb}{0.9, 0.45, 0.0}    
-\definecolor{Cerulean}{rgb}{0.0, 0.48, 0.90}      
-
-\usepackage[font=footnotesize]{subcaption}
-\usepackage{enumitem}
-\usepackage{indentfirst}
-\usepackage{hyperref}
-\usepackage{cleveref}
-\usepackage{cite}
-%\usepackage[dvipsnames]{xcolor}
-\usepackage{wrapfig}
-\usepackage{xspace}
-\usepackage{booktabs} % toprule, midrule, and bottomrule
-\usepackage{wasysym}
-% \usepackage{fontawesome5}
-\captionsetup[figure]{labelformat={default},labelsep=period,name={Fig.}}
-
-\Crefname{section}{Sec.}{Secs.} 
-\Crefname{figure}{Fig.}{Figs.} 
-\Crefname{table}{Table}{Tables} 
-% To simplify Equation (#) to (#)
-\crefname{equation}{}{}
-\Crefname{equation}{}{}
-

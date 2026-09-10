@@ -7,7 +7,7 @@ cv:
     UNIST: Ulsan National Institute of Science and Technology (UNIST)
   quote: Bridging wireless, AI, and robotics for the future
   research_profile: >-
-    A wireless communications researcher working at the intersection of wireless networks, artificial intelligence, and networked robotic systems. Studying how communication, computing, and physical decision-making can be jointly designed, with the goal of making wireless connectivity a fundamental component of Physical AI. Interested in bridging communication theory and optimization with real-world systems, from embedded platforms to wireless digital twins. Currently a postdoctoral researcher at Seoul National University. I received my Ph.D. from POSTECH under the supervision of Prof. Hyun Jong Yang and was a visiting scholar at the GENESYS Lab at The University of Texas at Austin, hosted by Prof. Kaushik Chowdhury.
+    A wireless communications researcher working at the intersection of wireless networks, AI, and networked robotic systems. Studying how communication, computing, and physical decision-making can be jointly designed, with the goal of making wireless connectivity a fundamental component of Physical AI. Interested in bridging communication theory and optimization with real-world systems, from embedded platforms to wireless digital twins. Currently a postdoctoral researcher at Seoul National University. I did my Ph.D. at POSTECH under the supervision of Prof. Hyun Jong Yang and was a visiting scholar at the GENESYS Lab at The University of Texas at Austin, hosted by Prof. Kaushik Chowdhury.
   publications_summary: >-
     Authored/co-authored 12 peer-reviewed papers spanning AI and AI-enabled wireless systems (IEEE TNNLS, IEEE TWC, IEEE IoTJ; IEEE JSAC and NeurIPS under review), communication-aware motion planning and networking (IEEE TWC; IEEE TCOM and IEEE INFOCOM under review), and networked robotic systems (IEEE/RSJ IROS). Current research extends these directions toward wireless digital twins and networked Physical AI.
   summary_highlights:
@@ -21,7 +21,7 @@ cv:
         - The 32nd Humantech Paper Awards, Samsung, 2026.02.11 — 120 awardees (120 out of 3,172, 3.8%).
         - Main Track Best Paper Award, IEEE ICTC, 2025.10.16 — 8 awardees (8 out of 734, 1.1%).
         - Best Paper Award, KICS, 2024.11.23 — 24 awardees (24 out of 930, 2.6%).
-        - Patent Competition Grand Prize, POSTECH and KIPA, 2024.01.28 — 1st place (1 out of 39, 2.6%); associated patent application KR 10-2024-0045157.
+        - Patent Competition Grand Prize, POSTECH and KIPA, 2024.01.28 — 1st place (1 out of 39, 2.6%).
         - Best Paper Award, Korea Aerospace Industries (KAI), 2022.11.24 — one of 9 award-winning teams nationwide.
     - label: Research fellowships
       items:
@@ -30,23 +30,23 @@ cv:
     - label: Professional experience
       text: Postdoctoral researcher at Seoul National University; visiting scholar at The University of Texas at Austin with Prof. Kaushik Chowdhury; Ph.D. from POSTECH under Prof. Hyun Jong Yang.
   field_of_interest:
+    - Secure and reliable communication for large-scale heterogeneous networks
+    - Aerial and non-terrestrial networks
     - Wireless cloud robotics and networked robotic systems
     - Communication-aware motion planning and control for mobile robots
     - Joint optimization of robotic mobility and wireless resource allocation
     - Edge/cloud intelligence for AI-powered remote control of robots
     - Wireless digital twins for Physical AI
     - AI-native 6G wireless networks
-    - Aerial and non-terrestrial networks
     - Integrated sensing and communication for robotic systems
-    - Secure and reliable communication for large-scale heterogeneous networks
   excluded_awards:
     - National Supercomputing Competition, Second Award
   section_order:
     - research_profile
     - education
     - experience
-    - key_projects
     - publications
+    - key_projects
     - domestic_papers
     - intellectual_properties
     - awards
