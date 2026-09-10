@@ -1,7 +1,10 @@
 cv:
   position: Integrated Systems Engineer across Wireless, AI, and Robotics
   address: Seoul, Korea
-  email_display: hs dot lyu at snu dot ac dot kr
+  email_display: hs.lyu@snu.ac.kr
+  scopus_id: "57205303074"
+  scopus_url: https://www.scopus.com/authid/detail.uri?authorId=57205303074
+  orcid: 0009-0002-8551-4184
   institution_names:
     POSTECH: Pohang University of Science and Technology (POSTECH)
     UNIST: Ulsan National Institute of Science and Technology (UNIST)

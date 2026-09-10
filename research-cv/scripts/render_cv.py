@@ -143,6 +143,23 @@ def profile_fragment(portfolio: dict, cv: dict) -> str:
         lines.append(f"\\linkedin{{{latex(linkedin)}}}")
     if scholar_id:
         lines.append(f"\\googlescholar{{{latex(scholar_id)}}}{{Google Scholar}}")
+    academic_ids = []
+    if cv.get("orcid"):
+        orcid = str(cv["orcid"])
+        academic_ids.append(
+            f"\\href{{https://orcid.org/{url_argument(orcid)}}}"
+            f"{{\\faOrcid\\acvHeaderIconSep ORCID ({latex(orcid)})}}"
+        )
+    if cv.get("scopus_id"):
+        scopus_url = str(cv.get("scopus_url") or "").strip()
+        if not scopus_url:
+            raise ValueError("cv-extra.yml: cv.scopus_url is required when cv.scopus_id is set")
+        academic_ids.append(
+            f"\\href{{{url_argument(scopus_url)}}}"
+            f"{{\\faSearch\\acvHeaderIconSep Scopus ({latex(cv['scopus_id'])})}}"
+        )
+    if academic_ids:
+        lines.append(r"\academicids{" + r"\acvHeaderSocialSep ".join(academic_ids) + "}")
     if cv.get("quote"):
         lines.append(f"\\quote{{``{latex(cv['quote'])}''}}")
     return "\n".join(lines) + "\n"

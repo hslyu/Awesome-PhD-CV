@@ -366,6 +366,10 @@
 % Usage: \extrainfo{<extra information>}
 \newcommand*{\extrainfo}[1]{\def\@extrainfo{#1}}
 
+% Defines academic identifiers displayed on a separate header row (optional)
+% Usage: \academicids{<academic identifiers>}
+\newcommand*{\academicids}[1]{\def\@academicids{#1}}
+
 % Defines writer's quote (optional)
 % Usage: \quote{<quote>}
 \renewcommand*{\quote}[1]{\def\@quote{#1}}
@@ -602,7 +606,10 @@
           \ifbool{isstart}{\setbool{isstart}{false}}{\acvHeaderSocialSep}%
           \@extrainfo%
         }%
-    } \\[\acvHeaderAfterSocialSkip]%
+    } \ifthenelse{\isundefined{\@academicids}}{\\[\acvHeaderAfterSocialSkip]}{\\[0mm]}%
+    \ifthenelse{\isundefined{\@academicids}}%
+      {}%
+      {\headersocialstyle{\@academicids}\\[\acvHeaderAfterSocialSkip]}%
     \ifthenelse{\isundefined{\@quote}}%
       {}%
       {\headerquotestyle{\@quote\\}\vspace{\acvHeaderAfterQuoteSkip}}%
