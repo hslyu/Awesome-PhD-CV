@@ -300,8 +300,6 @@ def publication_line(entry: dict) -> str:
     )
     note = note.replace("Best Paper Award", r"\awardhighlight{Best Paper Award}")
     ending = f" {note}." if note else ""
-    if entry.get("cv_omit_venue_year", "").lower() == "true":
-        return f"  \\item {authors}, ``{linked_title},''{ending}"
     return f"  \\item {authors}, ``{linked_title},'' {venue}, {year}.{ending}"
 
 
