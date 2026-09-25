@@ -12,7 +12,7 @@ cv:
   research_profile: >-
     A wireless communications researcher working at the intersection of wireless networks, AI, and networked robotic systems. Studying how communication, computing, and physical decision-making can be jointly designed, with the goal of making wireless connectivity a fundamental component of Physical AI. Interested in bridging communication theory and optimization with real-world systems, from embedded platforms to wireless digital twins. Currently a postdoctoral researcher at Seoul National University. I did my Ph.D. at POSTECH under the supervision of Prof. Hyun Jong Yang and was a visiting scholar at the GENESYS Lab at The University of Texas at Austin, hosted by Prof. Kaushik Chowdhury.
   publications_summary: >-
-    Authored/co-authored 12 peer-reviewed papers spanning AI and AI-enabled wireless systems (IEEE TNNLS, IEEE TWC, IEEE IoTJ; IEEE JSAC and NeurIPS under review), communication-aware motion planning and networking (IEEE TWC; IEEE TCOM and IEEE INFOCOM under review), and networked robotic systems (IEEE/RSJ IROS). Current research extends these directions toward wireless digital twins and networked Physical AI.
+    Authored/co-authored 13 peer-reviewed papers spanning AI and AI-enabled wireless systems (NeurIPS, IEEE TNNLS, IEEE TWC, IEEE IoTJ; IEEE JSAC under review), communication-aware motion planning and networking (IEEE TWC; IEEE TCOM and IEEE INFOCOM under review), and networked robotic systems (IEEE/RSJ IROS). Current research extends these directions toward wireless digital twins and networked Physical AI.
   summary_highlights:
     - label: Research systems & demos
       items:
